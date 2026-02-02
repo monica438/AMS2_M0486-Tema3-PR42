@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { registerPrompt, getConversation, listOllamaModels } = require('../controllers/chatController');
+const { analyzeSentiment, getSentimentHistory } = require('../controllers/sentimentController');
 
 /**
  * @swagger
@@ -84,5 +85,74 @@ router.get('/conversation/:id', getConversation);
  *         $ref: '#/components/responses/ServerError'
  */
 router.get('/models', listOllamaModels);
+
+/**
+ * @swagger
+ * /api/chat/sentiment-analysis:
+ *   post:
+ *     summary: Realitza anàlisi de sentiment d'un text
+ *     tags: [Sentiment Analysis]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/SentimentAnalysisRequest'
+ *           examples:
+ *             example1:
+ *               value:
+ *                 text: "Aquest és un comentari positiu"
+ *                 userId: "12345"
+ *                 model: "qwen2.5vl:7b"
+ *     responses:
+ *       201:
+ *         description: Anàlisi de sentiment realitzada correctament
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/SentimentAnalysisResponse'
+ *       400:
+ *         $ref: '#/components/responses/BadRequest'
+ *       500:
+ *         $ref: '#/components/responses/ServerError'
+ */
+router.post('/sentiment-analysis', analyzeSentiment);
+
+/**
+ * @swagger
+ * /api/chat/sentiment-analysis/{userId}:
+ *   get:
+ *     summary: Obté l'historial d'anàlisis per usuari
+ *     tags: [Sentiment Analysis]
+ *     parameters:
+ *       - in: path
+ *         name: userId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Identificador de l'usuari
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           default: 10
+ *         description: Nombre màxim d'anàlisis a retornar
+ *       - in: query
+ *         name: offset
+ *         schema:
+ *           type: integer
+ *           default: 0
+ *         description: Desplaçament per a la paginació
+ *     responses:
+ *       200:
+ *         description: Historial d'anàlisis trobat
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/SentimentHistoryResponse'
+ *       400:
+ *         $ref: '#/components/responses/BadRequest'
+ */
+router.get('/sentiment-analysis/:userId', getSentimentHistory);
 
 module.exports = router;

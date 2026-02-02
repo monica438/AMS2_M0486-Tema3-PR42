@@ -115,6 +115,82 @@ const swaggerOptions = {
                         }
                     }
                 },
+                SentimentAnalysisRequest: {
+                    type: 'object',
+                    required: ['text', 'userId'],
+                    properties: {
+                        text: {
+                            type: 'string',
+                            minLength: 1,
+                            maxLength: 5000,
+                            description: 'Text a analitzar'
+                        },
+                        userId: {
+                            type: 'string',
+                            minLength: 1,
+                            description: 'Identificador de l\'usuari'
+                        },
+                        model: {
+                            type: 'string',
+                            default: 'qwen2.5vl:7b'
+                        }
+                    }
+                },
+                SentimentAnalysisResponse: {
+                    type: 'object',
+                    properties: {
+                        analysisId: {
+                            type: 'string',
+                            format: 'uuid'
+                        },
+                        userId: {
+                            type: 'string'
+                        },
+                        text: {
+                            type: 'string'
+                        },
+                        sentiment: {
+                            type: 'string',
+                            enum: ['positive', 'negative', 'neutral']
+                        },
+                        confidence: {
+                            type: 'number',
+                            format: 'float'
+                        },
+                        model: {
+                            type: 'string'
+                        },
+                        timestamp: {
+                            type: 'string',
+                            format: 'date-time'
+                        }
+                    }
+                },
+                SentimentHistoryResponse: {
+                    type: 'object',
+                    properties: {
+                        userId: {
+                            type: 'string'
+                        },
+                        total: {
+                            type: 'integer'
+                        },
+                        analyses: {
+                            type: 'array',
+                            items: {
+                                type: 'object',
+                                properties: {
+                                    analysisId: { type: 'string', format: 'uuid' },
+                                    text: { type: 'string' },
+                                    sentiment: { type: 'string', enum: ['positive', 'negative', 'neutral'] },
+                                    confidence: { type: 'number', format: 'float' },
+                                    model: { type: 'string' },
+                                    timestamp: { type: 'string', format: 'date-time' }
+                                }
+                            }
+                        }
+                    }
+                },
                 Error: {
                     type: 'object',
                     properties: {
@@ -202,6 +278,10 @@ const swaggerOptions = {
             {
                 name: 'Chat',
                 description: 'Configuració i models'
+            },
+            {
+                name: 'Sentiment Analysis',
+                description: 'Anàlisi de sentiment de textos'
             }
         ]
     },
